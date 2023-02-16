@@ -1,0 +1,108 @@
+li {
+    list-style-type: none;
+}
+body {
+    background-color: rgb(255,153,35);
+}
+.service {
+    margin: 0 auto;
+    width: 1000px;
+    height: 680px;
+    background-color: white;
+    border-radius: 15px;
+}
+
+.thead {
+    margin: 0 auto;
+    padding: 10px 0;
+    width: 970px;
+    position: relative;
+    border-bottom: 2px solid rgb(226, 225, 225);
+}
+
+.thead div {
+    text-align: center;
+}
+
+.back {
+    position: absolute;
+    font-size: xx-large;
+    color: grey;
+}
+
+.tbody {
+    margin: 20px auto;
+    padding: 10px 40px;
+    width: 900px;
+    overflow-y: scroll;
+    height: 500px;
+    border-bottom: 2px solid rgb(226, 225, 225);
+}
+
+.tend {
+    padding: 0 40px;
+}
+
+.tend input {
+    width: 500px;
+    height: 25px;
+    border-radius: 7.5px;
+    border: solid orange;
+    /* background-color: orange; */
+}
+
+.tend button {
+    height: 30px;
+    width: 100px;
+}
+
+.bubble {
+    margin: 7.5px 0;
+    padding: 7.5px;
+    display: inline-block;
+    background-color: orange;
+    border-radius: 15px;
+}
+
+.bubble li {
+    padding: 10px;
+    padding-right: 40px;
+    position: relative;
+}
+
+.bubble li:hover {
+    background-color: white;
+}
+
+.bubble li span {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: x-large;
+    color: white;
+}
+
+.text-lg {
+    font-size: large;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+
+.text-sm {
+    font-size: small;
+}
+
+.talk-right {
+    text-align: right;
+}
+
+.talk-right p{
+    background-color: rgb(225, 225, 225);
+}
+
+.talk-left  {
+    text-align: left;
+}

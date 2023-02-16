@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>虚拟客服</title>
+    <link rel="stylesheet" href="service.css">
+    <script src="service.js"></script>
+</head>
+<body>
+    <div class="service">
+        <div class="thead">
+            <a href="../index.html"><div class="back">&lt</div></a>
+            <div class="text-lg bold">客服小蜜</div>
+            <div style="color: grey;">客服热线 xxxxxxx (7:00-次日1:00)</div>
+        </div>
+        <div class="tbody">
+            <div class="talk-left"><p class="bubble">尊敬的顾客，购物问题，智能小蜜来帮你~</p></div>
+            <div class="talk-left">
+                <div><p class="bubble">猜你想问</p></div>
+                <ul class="bubble">
+                    <li onclick="add('没收到货怎么办？','right')">
+                        没收到货怎么办
+                        <span>&gt;</span>
+                    </li>
+                    <li onclick="add('如何查看物流？','right')">
+                        如何查看物流信息
+                        <span>&gt;</span>
+                    </li>
+                    <li onclick="add('邮费谁承担？','right')">
+                        邮费谁承担
+                        <span>&gt;</span>
+                    </li>
+                    <li onclick="add('商品下单了发现收货地址填错怎么办','right')">
+                        商品下单了发现收货地址填错怎么办
+                        <span>&gt;</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="tend">
+            <input type="text" id="sendMessage">
+            <button onclick="send()">发送</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="js/kindeditor-4.1.10/themes/default/default.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" charset="utf-8" src="js/kindeditor-4.1.10/kindeditor-all-min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/kindeditor-4.1.10/lang/zh_CN.js"></script>
+    <link rel="stylesheet" type="text/css" href="js/jquery-easyui-1.4.1/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="js/jquery-easyui-1.4.1/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="css/jt.css" />
+    <script type="text/javascript" src="js/jquery-easyui-1.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery-easyui-1.4.1/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/jquery-easyui-1.4.1/locale/easyui-lang-zh_CN.js"></script>
+    <!-- 自己实现业务逻辑 -->
+    <script type="text/javascript" src="js/common.js"></script>
+</head>
+<body>
+<table class="easyui-datagrid" id="paidOrderList" title="已付款列表"
+       data-options="collapsible:true,pagination:true">
+    <thead>
+    <tr>
+        <th data-options="field:'items',width:740">商品</th>
+        <th data-options="field:'amount',width:100">总金额</th>
+        <th data-options="field:'addressId',width:100">地址号</th>
+        <th data-options="field:'orderId',width:100">订单号</th>
+        <th data-options="field:'orderTime',width:150">订单时间</th>
+    </tr>
+    </thead>
+</table>
+<table class="easyui-datagrid" id="sendOrderList" title="已发货列表"
+       data-options="collapsible:true,pagination:true">
+    <thead>
+        <tr>
+            <th data-options="field:'items',width:740">商品</th>
+            <th data-options="field:'amount',width:100">总金额</th>
+            <th data-options="field:'addressId',width:100">地址号</th>
+            <th data-options="field:'orderId',width:100">订单号</th>
+            <th data-options="field:'orderTime',width:150">订单时间</th>
+        </tr>
+    </thead>
+</table>
+</div>
+
+<script>
+    // 订单状态
+    // 0：未付款
+    // 1：已付款
+    // 2：已发货
+    // 3：已签收   
+    $.ajax({
+        type: "POST",
+        url: "http://127.0.0.1/order/list",
+        // url: "http://127.0.0.1:4523/m1/2026934-0-default/order/list",
+        data: JSON.stringify({
+            orderState: 1
+        }),
+        contentType:'application/json;charset=UTF-8',
+        success: function (res) {
+            console.log(res.data)
+            $("#paidOrderList").datagrid({
+                data: res.data
+            })
+            $('#paidOrderList').datagrid('reload'); 
+        }
+    })
+    $.ajax({
+        type: "POST",
+        url: "http://127.0.0.1/order/list",
+        // url: "http://127.0.0.1:4523/m1/2026934-0-default/order/list",
+        data: JSON.stringify({
+            orderState: 2
+        }),
+        contentType:'application/json;charset=UTF-8',
+        success: function (res) {
+            console.log(res.data)
+            $("#sendOrderList").datagrid({
+                data: res.data
+            })
+            $('#sendOrderList').datagrid('reload'); 
+        }
+    })
+</script>
+</body>
+</html>

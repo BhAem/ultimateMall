@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台系统注册</title>
+    <script type="text/javascript" src="js/jquery-1.2.6.min.js" charset="utf-8"></script>
+    <script>
+$(function() {
+	//给验证码图片注册事件
+	/*$("#vcode").click(
+			function() {
+				// $(this).attr("src","/VerifyCodeServlet?"+Math.random());
+				$(this).attr("src",
+						"user_ajax/verifyCode?" + new Date().toLocaleString());
+			});*/
+	
+	// $("input[name=username]").blur(
+	// 		function() {
+	// 			var userName = $(this).val();
+	// 			if (!formObj.checkNull("username", "用户名不能为空")) {
+	// 				formObj.setMsg("username", "用户名不能为空");
+	// 			} else {
+	// 				$.ajax({
+	// 					url:"/user/checkUserName",
+	// 					type:"post",
+	// 					data:{"userName":userName},
+	// 					dataType:"json",
+	// 					success:function(result){
+	// 						if (result.status!=200) {
+	// 							$("#username_msg").html("用户名已存在");
+	// 						} else{
+	// 							$("#username_msg").html("<font color='green'>用户名可用</font>");
+	// 						}
+	// 					},
+	// 					error:function(){
+	// 						alert("请求失败！");
+	// 					}
+	// 				});
+	// 			}
+	// 		});
+	//给注册表单注册submit事件
+	$("form").submit(function(){
+		return register();
+	});
+});
+
+function register(){
+	var userName=$("form input[name=username]").val();
+	var userPassword=$("form input[name=password]").val();
+	var userPassword2=$("form input[name=password2]").val();
+	// var userNickName=$("form input[name=nickname]").val();
+	var userEmail=$("form input[name=email]").val();
+	var vcode=$("form input[name=vcode]").val();
+	var flag=formObj.checkForm();
+	if(flag){
+		var mydata = {
+			"userName":userName,
+			"userPassword":userPassword,
+			"userMail":userEmail,
+			"userKind": 1
+		};
+		mydata = JSON.stringify(mydata);
+		$.ajax({
+			url:"http://127.0.0.1/user/regist",
+			type:"post",
+			dataType:"json",
+			data:mydata,
+			contentType:'application/json;charset=UTF-8',
+			success:function(result){
+				// console.log(result)
+				alert("注册成功,转向登录页面")
+				window.location.href="manage-login.html";
+			},
+			error:function(){
+				alert("请求失败！");
+			}
+		});
+	}
+	
+	return false;
+}
+
+var formObj = {
+	checkForm : function() {
+		var flag = true;
+		// 非空验证
+		flag = this.checkNull("username", "用户名不能为空!");
+		flag = this.checkNull("password", "密码不能为空") && flag;
+		flag = this.checkNull("password2", "确认密码不能为空") && flag;
+		// flag = this.checkNull("nickname", "昵称不能为空") && flag;
+		flag = this.checkNull("email", "邮箱不能为空") && flag;
+		// 两次输入的密码是否相同
+		flag = this.checkPassword("password", "两次密码不相同") && flag;
+		// 邮箱格式
+		flag = this.checkEmail("email", "邮箱格式不正确") && flag;
+		flag = this.checkNull("vcode", "验证码不能为空") && flag;
+		// 返回flag
+		return flag;
+	},
+	checkNull : function(name, msg) {
+		var value = $("input[name=" + name + "]").val();
+		if ($.trim(value) == "") {
+			this.setMsg(name, msg);
+			return false;
+		}
+		return true;
+	},
+	checkPassword : function(name, msg) {
+		var pwd = $("input[name=" + name + "]").val();
+		var pwd2 = $("input[name=" + name + "2]").val();
+		if ($.trim(pwd) != "" && $.trim(pwd2) != "") {
+			if (pwd != pwd2) {
+				this.setMsg(name, msg);
+				return false;
+			}
+		}
+		return true;
+	},
+	checkEmail : function(name, msg) {
+		var value = $("input[name=" + name + "]").val();
+		var reg = /^\w+@\w+(\.\w+)+$/;
+		if (!reg.test(value)) {
+			this.setMsg(name, msg);
+			return false;
+		}
+		return true;
+	},
+	setMsg : function(name, msg) {
+		$("#" + name + "_msg").text(msg);
+	}
+};
+
+
+
+function send_vcode(){
+	var flag = true;
+	var name = "email";
+	var msg = "邮箱不能为空";
+	var value = $("input[name=" + name + "]").val();
+	if ($.trim(value) == "") {
+		$("#" + name + "_msg").text(msg);
+		flag = false;
+	}
+
+	if (flag) {
+		var mydata = {'userMail': value};
+		mydata = JSON.stringify(mydata);
+		$.ajax({
+			url:"http://127.0.0.1/user/sendMail",
+			type:"POST",
+			data: mydata,
+			dataType:"json",
+			contentType:'application/json;charset=UTF-8',
+			success: function(res){
+				var code = res.code;
+				if (code == 1) {
+					document.getElementById('mycode').value=res.data;
+					$("#" + "vcode" + "_msg").text("验证码发送成功");
+				} else {
+					$("#" + "vcode" + "_msg").text(res.data);
+				}
+			},
+			error:function(res){
+				console.log(res)
+				alert("验证码请求失败！");
+			}
+		});
+	}
+}
+    </script>
+</head>
+
+<body>
+    <form >
+        <h1>注册后台管理系统</h1>
+        <table>
+            <tr>
+                <td colspan="2"><font color="rgb(255 153 35)">
+    
+                </font></td>
+            </tr>
+            <tr>
+                <td class="tds">用户名：</td>
+                <td>
+                    <input type="text" name="username" />
+                    <span style="color: rgb(255,153,35)" id="username_msg"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="tds">密码：</td>
+                <td>
+                    <input type="password" name="password" />
+                    <span style="color: rgb(255,153,35)" id="password_msg"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="tds">确认密码：</td>
+                <td>
+                    <input type="password" name="password2" />
+                    <span style="color: rgb(255,153,35)" id="password2_msg"></span>
+                </td>
+            </tr>
+    <!--        <tr>-->
+    <!--            <td class="tds">昵称：</td>-->
+    <!--            <td>-->
+    <!--                <input type="text" name="nickname" />-->
+    <!--                <span style="color: rgb(255,153,35)" id="nickname_msg"></span>-->
+    <!--            </td>-->
+    <!--        </tr>-->
+            <tr>
+                <td class="tds">邮箱：</td>
+                <td>
+                    <input type="text" name="email"/>
+                    <span style="color: rgb(255,153,35)" id="email_msg"></span>
+                </td>
+                <td class="tds"><button onclick='send_vcode()'>发送验证码</button></td>
+            </tr>
+            <tr>
+                <td class="tds">验证码：</td>
+                <td>
+                    <input type="text" name="vcode" id="mycode"/>
+                    <span style="color: rgb(255,153,35)" id="vcode_msg"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="sub_td" colspan="2" class="tds">
+                    <input type="submit" value="注册用户"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+<style>
+body{
+	/* background-image: url("../img/regist/zc.jpg"); */
+	background-color: rgb(248, 187, 118);
+	background-repeat: no-repeat;
+	background-position: center top;
+	font-family: "微软雅黑";
+}
+form{
+	width: 750px;
+	height: 450px;
+	margin: 145px auto;
+	padding: 25px;
+	border-radius: 25px;
+	border: 2px solid orange;
+	background-color: white;
+}
+h1{
+	width: 300px;/* */
+	color: rgb(255,153,35);
+	margin: 30px auto;
+	text-align: center;
+}
+
+table{
+	margin: 0 auto;
+	/*text-align: center;*/
+}
+td{
+	padding-top: 10px;
+}
+.tds{
+	font-size: 18px;
+	text-align: right;
+}
+
+input{
+	border: 1px solid #cccccc;
+	width: 150px;
+	height: 22px;
+}
+
+input[name='valistr']{
+	width:80px;
+}
+
+img{
+	vertical-align: top;
+}
+
+.sub_td{
+	text-align: center;
+}
+
+input[type='submit']{
+	border: none;
+	width:127px;
+	height: 44px;
+	font-size: 20px;
+	color: #FFFFFF;
+	font-weight: bolder;
+	background-image: url('img/regist/zc_btn01.jpg');
+}
+
+input[type='submit']:hover{
+	background-image: url('img/regist/zc_btn02.jpg');
+}
+
+
+</style>
+</html>

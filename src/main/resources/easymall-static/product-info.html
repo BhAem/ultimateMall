@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .divcss5{ border:1px solid #F00; width:200px; height:100px}
+    </style>
+    <link rel="stylesheet" href="css/foot.css"/>
+    <link rel="stylesheet" href="css/head.css"/>
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="js/base-v1.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/jquery-1.2.6.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/cookie.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/common.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/base-2011.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/jquery.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/jquery-extend.js"></script>
+    <script type="text/javascript" src="js/lib-v1.js" charset="utf-8"></script>
+    <link href="css/prodList.css" rel="stylesheet" type="text/css">
+    <link href="css/prodInfo.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="js/logout.js"></script>
+    <script type="text/javascript" src="js/productinfo.js"></script>
+    <meta charset="UTF-8">
+    <title>商品分页</title>
+    <script type="text/javascript">
+        var userId="";
+        var productId="";
+        window.onload=function(){
+            $.ajax({
+                url : "http://127.0.0.1/kind/list",
+                dataType : "json",
+                type : "GET",
+                success : function(result){
+                    var kind_arr = result.data;
+                    for (let i = 0; i < kind_arr.length; i++) {
+                        $("#myli").append("<li><a href=./product-list.html?kind="+kind_arr[i].itemKind+">"+kind_arr[i].itemKind+"</a></li>");
+                    }
+                },
+                error : function(){
+                    alert('商品类别请求失败');
+                }
+            });
+
+            let arrCk = document.cookie.split(";");
+            var userName = "";
+            var userPassword = "";
+            for(let i = 0 ; i<= arrCk.length-1 ; i++ ){
+                let arrSmall = arrCk[i].trim().split("=");
+                if (arrSmall[0] == "userName")
+                    userName = arrSmall[1];
+                else if (arrSmall[0] == "userPassword")
+                    userPassword = arrSmall[1];
+            }
+            if (userName != "" && userPassword != "") {
+                userId = userName;
+                var html = userName+"，欢迎来到UltimateMall！<a href=\"javascript:void(0)\" class=\"link-logout\" onclick='logout()'>[退出]</a>  \| <a href=\"manage.html\" class=\"link-logout\">[后台]</a> \| <a href=\"service/service.html\" class=\"link-logout\">[客服助手]</a>";
+                $("#loginbar").html(html);
+            }
+
+            var localUrl=decodeURI(window.location.href);
+            //alert(localUrl);
+            productId=localUrl.split("?")[1].split("=")[1];
+            console.log(productId)
+            $.ajax({
+                url:"http://127.0.0.1/item/"+productId,
+                dataType:"json",
+                type:"GET",
+                success:function(_data){
+                    console.log(_data)
+                    //图片
+                    var imgUrl=_data.data.itemUrl;
+                    productId=_data.data.itemId;
+                    document.getElementById("prod_img").src="http://127.0.0.1/common/download/" + imgUrl;
+                    document.getElementById("prod_name").innerText=_data.data.itemName;
+                    document.getElementById("prod_desc").innerText=_data.data.itemDescription;
+                    document.getElementById("prod_pric").innerText=_data.data.itemPrice;
+                    document.getElementById("prod_num").innerText=_data.data.itemNum;
+                }
+            });
+
+        }
+
+        function addCart(){
+            if(userId==""){
+                window.location.href="login.html";
+                return;
+            }
+            var num=document.getElementById("buyNumInp").value;
+            // console.log(num);
+            for (let i =0; i < num; i++) {
+                $.ajax({
+                    url:"http://127.0.0.1/cart/add/"+productId,
+                    dataType:"json",
+                    async: false,
+                    type:"GET",
+                    success:function (data){
+                        // if(data.code==1){
+                        //     window.location.href="./mycart.html";
+                        // }else{
+                        //     alert("新增购物车失败");
+                        // }
+                    },
+                    error:function () {
+                        alert("调用购物车新增失败");
+                    }
+                });
+            }
+            window.location.href="./mycart.html";
+
+        }
+        function search(a){
+            var query=document.getElementById(a).value;
+            //alert(query);
+            window.location.href="./search.html?query="+query;
+
+        }
+    </script>
+</head>
+<body>
+<div id="common_head">
+    <div id="line1">
+        <div id="content">
+            <li class="fore1" id="loginbar" clstag="homepage|keycount|home2013|01b">
+                <span id="head_span"\\\x><a href="./login.html">登录</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="./regist.html">注册</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="manage.html">后台</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="service/service.html">客服助手</a></span>
+
+            </li>
+        </div>
+    </div>
+    <div id="line2">
+        <img id="logo" src="img/head/logo.jpg"/>
+        <input type="text" value="" accesskey="s" id="key" autocomplete="off" onkeydown="javascript:if(event.keyCode==13) search('key');"/>
+        <input type="button" value="搜 索" onclick="search('key')"/>
+        <span id="goto">
+			<a id="goto_order" href="./myorder.html">我的订单</a>
+			<a id="goto_cart" href="./mycart.html">我的购物车</a>
+            <a id="goto_address" href="./myaddress.html">地址管理</a>
+		</span>
+        <img id="erwm" src="img/head/qr.jpg"/>
+    </div>
+    <div id="line3">
+        <div id="content">
+            <ul id="myli">
+                <li><a href="./index.html">首页</a></li>
+                <li><a href="./product-list.html?kind=all">全部商品</a></li>
+<!--                <li><a href="/web/sekill/list">秒杀商品</a></li>-->
+<!--                <li><a href="#">电脑平板</a></li>-->
+<!--                <li><a href="#">家用电器</a></li>-->
+<!--                <li><a href="#">汽车用品</a></li>-->
+<!--                <li><a href="#">食品饮料</a></li>-->
+<!--                <li><a href="#">图书杂志</a></li>-->
+<!--                <li><a href="#">服装服饰</a></li>-->
+<!--                <li><a href="#">理财产品</a></li>-->
+            </ul>
+        </div>
+    </div>
+</div>
+<div id="warp">
+    <div id="left">
+        <div id="left_top">
+            <img src="" id="prod_img">
+        </div>
+        <div id="left_bottom">
+
+        </div>
+    </div>
+    <div id="right">
+        <div id="right_top">
+            <span id="prod_name"><br/></span>
+            <br>
+            <span id="prod_desc"><br/></span>
+        </div>
+        <div id="right_middle">
+				<span id="right_middle_span">
+                    UltimateMall 价：<span class="price_red" id="prod_pric">1111</span>元<br/>
+			            运     费：满 100 免运费<br />
+			            服     务：由UltimateMall负责发货，并提供售后服务<br />
+                    库存：<span id="prod_num">1111</span>件<br />
+			            购买数量：
+	            <a href="javascript:void(0)" id="delNum" onclick="change(-1)">-</a>
+	            <input id="buyNumInp" name="buyNum" type="text" value="1" />
+		        <a href="javascript:void(0)" id="addNum" onclick="change(1)">+</a>
+                </span>
+        </div>
+        <div id="right_bottom">
+            <input class="add_cart_but" type="button" onclick="addCart()"/>
+        </div>
+    </div>
+</div>
+<div id="common_foot">
+    <p>
+        Copyright © 2011-2015 达内软件技术有限公司 版权所有 保留一切权利 苏B2-20130048号 | 京ICP备09062682号-9
+        <br>
+        网络文化经营许可证苏网文[2012]0401-019号
+    </p>
+</div>
+</body>
+</html>

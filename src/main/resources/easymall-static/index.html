@@ -1,0 +1,218 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>欢迎光临UltimateMall</title>
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="css/index.css"/>
+    <link rel="stylesheet" href="css/foot.css"/>
+    <link rel="stylesheet" href="css/head.css"/>
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="js/base-v1.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/jquery-1.2.6.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/cookie.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/common.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/base-2011.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/jquery.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/jquery-extend.js"></script>
+<!--    <script type="text/javascript" src="js/logout.js"></script>-->
+    <script type="text/javascript" src="js/lib-v1.js" charset="utf-8"></script>
+    <link href="css/prodList.css" rel="stylesheet" type="text/css">
+    <meta charset="UTF-8">
+
+</head>
+<body>
+<script type="text/javascript">
+    window.onload=function(){
+        // var userId="";
+        // var _ticket = $.cookie("EM_TICKET");
+        // if(!_ticket){
+        //     return ;
+        // }
+        //
+        // //当dataType类型为jsonp时，jQuery就会自动在请求链接上增加一个callback的参数
+        // $.ajax({
+        //     url : "http://www.easymall.com/user/query/" + _ticket,
+        //     dataType : "json",
+        //     type : "GET",
+        //     success : function(data){
+        //         //alert("好啊2");
+        //         if(data.status == 200){
+        //             var _data = JSON.parse(data.data);//jackson
+        //             var html =_data.userName+"，欢迎来到UltimateMall！<a href=\"javascript:void(0)\" class=\"link-logout\" onclick='logout()'>[退出]</a>  \|<a href=\"manage.html\" class=\"link-logout\">[后台]</a>";
+        //             userId=_data.userId;
+        //             $("#loginbar").html(html);
+        //         }
+        //
+        //     },
+        //     error : function(){
+        //         alert('index error.');
+        //     }
+        // });
+
+        let arrCk = document.cookie.split(";");
+        var userName = "";
+        var userPassword = "";
+        for(let i = 0 ; i<= arrCk.length-1 ; i++ ){
+            let arrSmall = arrCk[i].trim().split("=");
+            if (arrSmall[0] == "userName") {
+                userName = arrSmall[1];
+            }
+            else if (arrSmall[0] == "userPassword") {
+                userPassword = arrSmall[1];
+            }
+        }
+
+        if (userName != "" && userPassword != "") {
+            var html = userName+"，欢迎来到UltimateMall！<a href=\"javascript:void(0)\" class=\"link-logout\" onclick='logout()'>[退出]</a>  \| <a href=\"manage.html\" class=\"link-logout\">[后台]</a> \| <a href=\"service/service.html\" class=\"link-logout\">[客服助手]</a>";
+            // var html = userName+"，欢迎来到UltimateMall！<a href=\"javascript:void(0)\" class=\"link-logout\" onclick='logout()'>[退出]</a>  \|<a href=\"manage.html\" class=\"link-logout\">[后台]</a>";
+            $("#loginbar").html(html);
+        }
+
+        $.ajax({
+            url : "http://127.0.0.1/kind/list",
+            dataType : "json",
+            type : "GET",
+            success : function(result){
+                var kind_arr = result.data;
+                for (let i = 0; i < kind_arr.length; i++) {
+                    $("#myli").append("<li><a href=./product-list.html?kind="+kind_arr[i].itemKind+">"+kind_arr[i].itemKind+"</a></li>");
+                }
+            },
+            error : function(){
+                alert('商品类别请求失败');
+            }
+        });
+
+    }
+    function search(a){
+        var query=document.getElementById(a).value;
+
+        window.location.href="./search.html?query="+query;
+
+    }
+
+    //获取所有的cookies
+    function getAllCookies() {
+        var cookies = document.cookie.split(/;\s/g);
+        var cookieObj = {};
+        cookies.forEach(function (item) {
+            var key = item.split('=')[0];
+            cookieObj[key] = item.split('=')[1];
+        });
+        return cookieObj;
+    }
+    //通过key来获取cookie，本方法依赖于getAllCookies()
+    function getCookieByKey(key) {
+        return getAllCookies()[key];
+    }
+    //通过key来删除cookie
+    function clearCookieByKey(key) {
+        setCookie(key, "", -1);
+    }
+    //清空所有的cookies, 本方法依赖于getAllCookies()，clearCookieByKey(key)
+    function clearAllCookies() {
+        var keys = Object.keys(getAllCookies());
+        keys.forEach(function (item) {
+            clearCookieByKey(item);
+        });
+    }
+
+    function logout(){
+        $.ajax({
+            url:"http://127.0.0.1/user/logout",
+            dataType:"json",
+            type:"GET",
+            async: false,
+            success:function (data) {
+                clearAllCookies();
+                window.location.href="./index.html";
+            },
+            error:function (data) {
+                // alert("登出请求发送失败");
+            }
+        });
+    }
+
+
+</script>
+<div id="common_head">
+    <div id="line1">
+        <div id="content">
+            <li class="fore1" id="loginbar" clstag="homepage|keycount|home2013|01b">
+                <span id="head_span"\\\x><a href="login.html">登录</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="regist.html">注册</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="manage.html">后台</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="service/service.html">客服助手</a></span>
+            </li>
+        </div>
+    </div>
+    <div id="line2">
+        <img id="logo" src="img/head/logo.jpg"/>
+        <input type="text" value="" accesskey="s" id="key" autocomplete="off" onkeydown="javascript:if(event.keyCode==13) search('key');"/>
+        <input type="button" value="搜 索" onclick="search('key')"/>
+        <span id="goto">
+			<a id="goto_order" href="./myorder.html">我的订单</a>
+			<a id="goto_cart" href="./mycart.html">我的购物车</a>
+            <a id="goto_address" href="./myaddress.html">地址管理</a>
+		</span>
+        <img id="erwm" src="img/head/qr.jpg"/>
+    </div>
+    <div id="line3">
+        <div id="content">
+            <ul id="myli">
+                <li><a href="./index.html">首页</a></li>
+                <li><a href="./product-list.html?kind=all">全部商品</a></li>
+<!--                <li><a href="./seckill-list.html">秒杀商品</a></li>-->
+<!--                <li><a href="#">电脑平板</a></li>-->
+<!--                <li><a href="#">家用电器</a></li>-->
+<!--                <li><a href="#">汽车用品</a></li>-->
+<!--                <li><a href="#">食品饮料</a></li>-->
+<!--                <li><a href="#">图书杂志</a></li>-->
+<!--                <li><a href="#">服装服饰</a></li>-->
+<!--                <li><a href="#">理财产品</a></li>-->
+            </ul>
+        </div>
+    </div>
+</div>
+<div id="index">
+    <div id="line1" style="margin-top: 5px;">
+        <a href="product-info.html?productId=1599985774248349708"><img src="http://127.0.0.1/common/download/banner_big.jpg"/></a>
+    </div>
+    <div id="line2">
+        <a href="product-info.html?productId=1599985774248349704"><img id="line2_1" src="http://127.0.0.1/common/download/adv1.jpg"/></a>
+        <a href="product-info.html?productId=1599985774248349705"><img id="line2_2" src="http://127.0.0.1/common/download/adv2.jpg"/></a>
+            <a href="product-info.html?productId=1599985774248349702"><img id="line2_3" src="http://127.0.0.1/common/download/adv_l1.jpg"/></a>
+    </div>
+    <div id="line3">
+        <a href="product-info.html?productId=1599985774248349706"><img id="line3_1" src="http://127.0.0.1/common/download/adv3.jpg"/></a>
+            <a href="product-info.html?productId=1599985774248349707"><img id="line3_2" src="http://127.0.0.1/common/download/adv4.jpg"/></a>
+        <div id="line3_right">
+            <a href="product-info.html?productId=1599985774248349703"><img id="line3_3" src="http://127.0.0.1/common/download/adv_l2.jpg"/></a>
+            <img id="line3_4" src="img/index/adv_l3.jpg"/>
+        </div>
+    </div>
+    <div id="line4">
+        <a href="product-info.html?productId=1599985774248349701"><img src="http://127.0.0.1/common/download/217.jpg"/></a>
+    </div>
+    <div id="line5">
+			<span id="line5_1">
+				<img src="img/index/icon_g1.png"/>&nbsp;&nbsp;500强企业 品质保证
+			</span>
+        <span id="line5_2">
+				<img src="img/index/icon_g2.png"/>&nbsp;&nbsp;7天退货 15天换货
+			</span>
+        <span id="line5_3">
+				<img src="img/index/icon_g3.png"/>&nbsp;&nbsp;100元起免运费
+			</span>
+        <span id="line5_4">
+				<img src="img/index/icon_g4.png"/>&nbsp;&nbsp;448家维修网点 全国联保
+			</span>
+    </div>
+</div>
+<div id="common_foot">
+    <p>
+        Copyright © 2011-2015 达内软件技术有限公司 版权所有 保留一切权利 苏B2-20130048号 | 京ICP备09062682号-9
+        <br>
+        网络文化经营许可证苏网文[2012]0401-019号
+    </p>
+</div>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台系统登录</title>
+    <script type="text/javascript" src="js/jquery-1.2.6.min.js" charset="utf-8"></script>
+    <script>
+        $(function(){
+        
+        //给form表单添加submit事件
+        $("form").submit(function(){
+            return login();
+        });
+        
+    });
+    function login(){
+        //获取页面数据
+        var userName=$("form input[name=username]").val();
+        var userPassword=$("form input[name=password]").val();
+        if(userName==""){
+            $("form table tr:eq(0) td span").html("用户名不能为空");
+            return false;
+        }
+        if(userPassword==""){
+            $("form table tr:eq(1) td span").html("密码不能为空");
+            return false;
+        }
+    
+        $.ajax({
+            url:"http://127.0.0.1/user/loginByPassword",
+            // url: "http://127.0.0.1:4523/m1/2026934-0-default/user/loginByPassword",
+            type:"post",
+            data:JSON.stringify({"userName":userName,"userPassword":userPassword}),
+            contentType:'application/json;charset=UTF-8',
+            dataType:"json",
+            success:function(result){
+                //result是服务端返回的数据
+                alert("登录成功，进入后台管理系统")
+                window.location.href="manage.html?userId="+result.data.userId+"&userKind="+result.data.userKind;
+            },
+            error:function(){
+                alert("请求失败!");
+            }
+        });
+        
+        return false;
+    }
+    
+    </script>
+</head>
+
+<body>
+    <form>
+        <h1>欢迎登陆后台管理系统</h1>
+        <table>
+            <tr>
+                <td class="tdx">用户名：</td>
+                <td><input type="text" id="username" name="username" value=""/>
+                    <span style="color:rgb(255,153,35)"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdx">密&nbsp;&nbsp; 码：</td>
+                <td><input type="password" name="password"/>
+                    <span style="color:rgb(255,153,35)"></span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="登陆"/>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span style="color:rgb(255,153,35)"><a href="manage-regist.html">还未注册，前往注册</a></span>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+<style>
+    body{
+	/* background-image: url("../img/login/dl.jpg"); */
+	background-color: rgb(248, 187, 118);
+	background-position: top;
+	font-family: "微软雅黑";
+}
+h1{
+	width:300px;
+	margin:30px auto;
+	text-align: center;
+	color:rgb(255,153,35);
+	font-size:27px;
+}
+form{
+	width: 550px;
+	height: 300px;
+	margin: 145px auto;
+	padding: 25px;
+	border-radius: 25px;
+	border: 2px solid orange;
+	background-color: white;
+}
+
+form input[type='text'],form input[type='password']{
+	border: 1px solid #CCCCCC;
+	height: 25px;
+	line-height:25px;
+	vertical-align: middle;
+}
+
+table{
+	margin:0px auto 0px;
+}
+td{
+	padding-top:10px;
+}
+.tdx{
+	text-align: right;
+}
+
+input[type='submit']{
+	background-image: url("img/login/dlan01.jpg");
+	width:92px;
+	height:44px;
+	border-style:none;
+	font-size:20px;
+	font-weight:bold;
+	color:white;
+	cursor: pointer;
+}
+input[type='submit']:hover{
+	background-image: url("img/login/dlan02.jpg");
+}
+</style>
+</html>

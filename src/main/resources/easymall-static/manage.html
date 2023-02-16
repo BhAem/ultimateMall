@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="js/kindeditor-4.1.10/themes/default/default.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" charset="utf-8" src="js/kindeditor-4.1.10/kindeditor-all-min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/kindeditor-4.1.10/lang/zh_CN.js"></script>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="js/jquery-easyui-1.4.1/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="js/jquery-easyui-1.4.1/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="css/jt.css" />
+    <script type="text/javascript" src="js/jquery-easyui-1.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery-easyui-1.4.1/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/jquery-easyui-1.4.1/locale/easyui-lang-zh_CN.js"></script>
+    <!-- 自己实现业务逻辑 -->
+    <script type="text/javascript" src="js/common.js"></script>
+
+    <title>UltimateMall商城后台管理系统</title>
+    <style type="text/css">
+        .content {
+            padding: 10px 10px 10px 10px;
+        }
+    </style>
+</head>
+<body class="easyui-layout">
+<div data-options="region:'west',title:'菜单',split:true" style="width:180px;">
+    <ul id="menu" class="easyui-tree" style="margin-top: 10px;margin-left: 5px;">
+        <li>
+            <span>商品管理</span>
+            <ul>
+                <li data-options="attributes:{'url':'./item-add.html'}">新增商品</li>
+                <li data-options="attributes:{'url':'./item-list.html'}">查询商品</li>
+                <li data-options="attributes:{'url':'./kind-list.html'}">商品类别</li>
+                <li data-options="attributes:{'url':'./order-list.html'}">订单显示</li>
+                <li data-options="attributes:{'url':'./sale-list.html'}">销售榜单</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<div data-options="region:'center',title:''">
+    <div style="height: 25px">
+        临时用户号：<span id="userId"></span>
+        <input id="loginout" type="button" value="登出系统">
+    </div>
+    <div id="tabs" class="easyui-tabs">
+        <div title="首页" style="padding:20px;">
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function(){
+        // console.log(window.location.href)
+        if (location.search=="") {
+           alert("还未登陆，无法访问，点击确认跳转到后台登录界面");
+           window.location.href = "manage-login.html";
+        } else {
+            var str = location.search;
+            str = str.split("&")[0];
+            str = str.split("?")[1];
+            str = str.split("=")[1];
+            $("#userId").text(str);
+        }
+        $("#loginout").click(function(){
+            $.ajax({
+                url:"http://127.0.0.1/user/logout",
+                // url: "http://127.0.0.1:4523/m1/2026934-0-default/user/logout",
+                type:"get",
+                success:function(result){
+                    //result是服务端返回的数据
+                    alert("登出成功，返回主页")
+                    window.location.href="index.html";
+                },
+                error:function(){
+                    alert("请求失败!");
+                }
+            });
+        })
+        $('#menu').tree({
+            onClick: function(node){
+                if($('#menu').tree("isLeaf",node.target)){
+                    var tabs = $("#tabs");
+                    var tab = tabs.tabs("getTab",node.text);
+                    if(tab){
+                        tabs.tabs("select",node.text);
+                    }else{
+                        tabs.tabs('add',{
+                            title:node.text,
+                            href: node.attributes.url,
+                            closable:true,
+                            bodyCls:"content"
+                        });
+                    }
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

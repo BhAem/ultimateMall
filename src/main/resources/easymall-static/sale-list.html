@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- <script type="text/javascript" src="js/jquery-easyui-1.4.1/jquery.min.js"></script> -->
+    <script type = "text/javascript" src = "js/common/jquery-1.4.2.js"></script>
+    <script type = "text/javascript" src = "js/common/jquery-1.11.3.js"></script>
+    <script type = "text/javascript" src = "js/common/jquery-1.11.3.min.js"></script>
+</head>
+<body>
+    <button id="poi" style="background-color: skyblue; height: 40px; width: 200px;font-size: 17px; text-align: center; line-height: 40px; border-radius: 15px;">打印榜单</button>
+    <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+    <script>
+        $("#poi").click(function(){
+            $.ajax({
+                type: "GET",
+                url: "http://127.0.0.1/saleList/poi",
+                success: function() {
+                    window.location.href="http://127.0.0.1/saleList/poi";
+                    $.message.alert("提示","下载文件成功!");
+                }
+            })
+        })
+    </script>
+    <script type = "text/javascript" src = "js/common/echarts.js"></script>
+    <div id="columnar" style="width: 600px;height:400px;"></div>
+    <div id="columnar2" style="width: 600px;height:400px;"></div>
+    
+    <script>
+        var columnar = echarts.init(document.getElementById('columnar'));
+        var columnar2 = echarts.init(document.getElementById('columnar2'));
+    /*发送ajax请求到后台，动态为option1赋值*/
+    $.ajax({
+        url:"http://127.0.0.1/saleList/echarts",
+        // url: "http://127.0.0.1:4523/m1/2026934-0-default/saleList/echarts",
+        type:"GET",
+        dataType: 'json',
+        success:function(e){
+            console.log(e);
+            // 指定指定柱状图的配置项和数据
+            var option1 = {
+                title: {
+                    text: e.data.title
+                },
+                tooltip: {},
+                legend: {
+                    data: ['销量'],
+                },
+                xAxis: {
+                    data: e.data.legend
+                },
+                yAxis: {},
+                series: [{
+                    name: '销量',
+                    type: 'bar',
+                    data: e.data.data
+                }]
+            };
+            columnar.setOption(option1);
+            //   指定饼状图的配置项和数据
+            var map = [];//用于饼状图数据比例显示
+            for(var i=0; i<e.data.data.length; i++)
+                map[i] = {value: e.data.data[i], name: e.data.legend[i]};
+            var option2 = {
+                title: {
+                    text: '销售榜单饼图'
+                },
+                tooltip: {},
+                legend: {
+                    data: e.data.legend,
+                },
+                series: [{
+                    name: '销量',
+                    type: 'pie',
+                    radius: '55%',
+                    data: map
+                }]
+            };
+            columnar2.setOption(option2);
+            console.log("success!");
+        },
+        error:function (e) {
+            console.log("error!");
+        }
+    });
+    </script>
+</body>
+</html>

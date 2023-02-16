@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="js/kindeditor-4.1.10/themes/default/default.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" charset="utf-8" src="js/kindeditor-4.1.10/kindeditor-all-min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/kindeditor-4.1.10/lang/zh_CN.js"></script>
+    <link rel="stylesheet" type="text/css" href="js/jquery-easyui-1.4.1/themes/default/easyui.css" />
+    <link rel="stylesheet" type="text/css" href="js/jquery-easyui-1.4.1/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="css/jt.css" />
+    <script type="text/javascript" src="js/jquery-easyui-1.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery-easyui-1.4.1/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/jquery-easyui-1.4.1/locale/easyui-lang-zh_CN.js"></script>
+    <!-- 自己实现业务逻辑 -->
+    <script type="text/javascript" src="js/common.js"></script>
+</head>
+<body>
+<table class="easyui-datagrid" id="kindList" title="商品类别列表"
+       data-options="singleSelect:true,collapsible:true,pagination:true,toolbar:toolbar">
+    <thead>
+    <tr>
+        <th data-options="field:'ck',checkbox:true"></th>
+        <th data-options="field:'itemKind',width:640">商品类目</th>
+    </tr>
+    </thead>
+</table>
+<div id="itemEditWindow" class="easyui-window" title="编辑商品类别" data-options="modal:true,closed:true,iconCls:'icon-save',href:'./item-edit.html'" style="width:80%;height:80%;padding:10px;">
+</div>
+
+<script>
+
+    function getSelectionsKind(){
+        var kindList = $("#kindList");
+        var sels = kindList.datagrid("getSelections");
+        var kind = sels[0].itemKind;
+        return kind;
+    }
+    var toolbar = [{
+        text:'新增',
+        iconCls:'icon-add',
+        handler:function(){
+            $.messager.prompt("添加类别", "请输入要添加的商品类别：", function(res) {
+                if (res == "") {
+                    return;
+                }
+                $.ajax({
+                    type: "GET",
+                    url: "http://127.0.0.1/kind/"+res,
+                    // url: "http://127.0.0.1:4523/m1/2026934-0-default/kind/1",
+                    async: false,
+                    success: function (ress) {
+                        $.messager.alert("修改成功","添加商品类别 "+res+" 成功！");
+                        reload();
+                    }
+                })
+            })
+        }
+    },
+    {
+        text:'编辑',
+        iconCls:'icon-edit',
+        handler:function(){
+            var kind = getSelectionsKind();
+            if(kind == ""){
+                $.messager.alert('提示','必须选择一个商品才能编辑!');
+                return ;
+            }
+            $.messager.prompt("编辑类别", "更改类别名为", function(res) {
+                if (res == "") {
+                    return;
+                }
+                $.ajax({
+                    type: "PUT",
+                    async: false,
+                    url: "http://127.0.0.1/kind/"+kind+"/"+res,
+                    // url: "http://127.0.0.1:4523/m1/2026934-0-default/kind/1/1",
+                    success: function(ress) {
+                        $.messager.alert("修改成功","更改类别名为 "+res+" 成功!");
+                        reload();
+                    }
+                })
+            })
+        }
+    },
+    {
+        text:'删除',
+        iconCls:'icon-cancel',
+        handler:function(){
+            var kind = getSelectionsKind();
+            if(kind == ""){
+                $.messager.alert('提示','未选中商品!');
+                return ;
+            }
+            $.messager.confirm('确认','确定删除类别为 '+kind+' 的商品吗？',function(r){
+                if (r){
+                    $.ajax({
+                        type: "DELETE",
+                        url: "http://127.0.0.1/kind/"+kind,
+                        // url: "http://127.0.0.1:4523/m1/2026934-0-default/kind/1",
+                        async: false,
+                        success: function(ress) {
+                            $.messager.alert("删除成功","删除"+kind+"成功!");
+                            reload();
+                        }
+                    })
+                }
+            });
+        }
+    }
+    ];
+</script>
+<script>
+    function reload() {
+        $.ajax({
+        type: "GET",
+        url: "http://127.0.0.1/kind/list",
+        async: true,
+        // url: "http://127.0.0.1:4523/m1/2026934-0-default/kind/list",
+        success: function (res) {
+            console.log(res.data)
+            $("#kindList").datagrid({
+                data: res.data
+            })
+            $('#kindList').datagrid('reload'); 
+        }
+    })
+    }
+    reload();
+</script>
+</body>
+</html>
